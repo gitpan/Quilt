@@ -1,4 +1,4 @@
-$Id: README,v 1.1.1.1 1997/10/22 21:35:08 ken Exp $
+$Id: README,v 1.2 1997/10/25 21:47:26 ken Exp $
 
 
 			    Quilt for Perl
@@ -49,7 +49,9 @@ INTRODUCTION
     directory for examples of using `Quilt'.
 
     Newer versions of this module can be found at
-    <ftp://ftp.uu.net/vendor/bitsko/gdo/>.
+    <ftp://ftp.uu.net/vendor/bitsko/gdo/>.  You can join the Quilt
+    mailing list by sending a message with the word `subscribe' in the
+    Subject: field to <quilt-request@bitsko.slc.ut.us>.
 
     Copyright (C) 1997 Ken MacLeod
     Quilt is distributed under the same terms as SP.  See the file

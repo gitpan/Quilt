@@ -1,5 +1,25 @@
 Revision history for Perl extension Quilt.
 
+0.04  Mon Nov  3 11:45:07 CST 1997
+	- toAscii.spec: fix space between `ABSTRACT' title and text,
+          add quotes in mail URLs, add XRef::End
+	- linuxdoc.spec: `REF' now uses `NAME' attribute as contents,
+          and `LABEL' is now an anchor
+	- docbook.spec, linuxdoc.spec, teilite.spec: use `use-gi' and
+          `copy-id' flags
+	- added `id' member to all classes, supported by
+          `SGML::Simple::Spec's `copy-id' flag
+	- fixes
+	  - docbook.spec: change `sub_title' to `subtitle', change
+            `author_blurb' to `blurb'
+
+0.03  Sat Oct 25 16:46:18 CDT 1997
+        - add info about Quilt mailing list
+	- toAscii: allow list items outside of lists
+	- HTML, Ascii: add table frame support
+        - fixes
+          - correct %files pathnames in RPM spec
+
 0.02  Fri Oct 24 18:58:51 CDT 1997
 	- wrHTML: use cool TABLE look for PRE
 	- toHTML: use `make' syntax on some elements

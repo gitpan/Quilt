@@ -4,6 +4,8 @@
   <head>
     <defaultobject>Quilt::Flow</defaultobject>
     <defaultprefix>Quilt</defaultprefix>
+    <use-gi>
+    <copy-id>
   <rules>
     <rule><query/TEI.2/     <holder>
 

@@ -2,7 +2,7 @@
 # Copyright (C) 1997 Ken MacLeod
 # See the file COPYING for distribution terms.
 #
-# $Id: Ascii.pm,v 1.2 1997/10/25 00:00:34 ken Exp $
+# $Id: Ascii.pm,v 1.3 1997/10/25 21:47:32 ken Exp $
 #
 
 package Quilt::Writer::Ascii;
@@ -346,18 +346,15 @@ sub format_table {
 				  'quadding' => 'center',
 				  'lines' => 'wrap'));
     my ($data) = "";
-    if ($num_parts == 1) {
-	#
-	# only a ``body'' part, put divider above and set left justify
-	#
-	my (@entries);
-	for ($ii = 0; $ii < $num_columns; $ii ++) {
-	    push (@entries, "-" x $col_width[$ii]);
-	}
-	$data .= join ("   ", @entries) . "\n";
-	# `left' is default for other parts
+    my $single_row_sep = row_sep (\@col_width, $table->frame, "-") . "\n";
+    my $double_row_sep = row_sep (\@col_width, $table->frame, "=") . "\n";
+    if ($num_parts == 1 || $table->frame !~ /none/i) {
+	# only a ``body'' part or framing all, put divider above and set start justify
+	$data .= $single_row_sep;
+	# `start' is default for other parts
 	$self->quadding ('start');
     }
+    my $part_num = 1;
     foreach $part (@{$table->parts}) {
 	my (@rows);
 	foreach $row (@{$part->rows}) {
@@ -371,29 +368,54 @@ sub format_table {
 		$self->{'file_handle'} = '';
 		$entry->iter->children_accept ($builder, $self);
 		$self->collect_data;
+		# remove leading and trailing blank lines
+		$self->{'file_handle'} =~ s/^[\s\n]*\n//s;
+		$self->{'file_handle'} =~ s/[\s\n]*$/\n/s; # leave one newline
 		push (@entries, $self->{'file_handle'});
 		$self->{'file_handle'} = pop (@{$self->{'file_handles'}});
 		$col_num ++;
 	    }
 
-	    push (@rows, merge_entries (\@col_width, @entries));
+	    push (@rows, merge_entries (\@col_width, $table->frame, @entries));
 	}
-	$data .= join ("\n", @rows);
-	my (@entries);
-	for ($ii = 0; $ii < $num_columns; $ii ++) {
-	    push (@entries, "-" x $col_width[$ii]);
+	
+	if ($table->frame =~ /none/i) {
+	    $data .= join ("\n", @rows);
+	    $data .= $single_row_sep;
+	} else {
+	    $data .= join ($single_row_sep, @rows);
+	    if ($part_num == $num_parts) {
+		$data .= $single_row_sep;
+	    } else {
+		$data .= $double_row_sep;
+	    }
 	}
-	$data .= join ("   ", @entries) . "\n";
-	# `left' is default for other parts
+	# `start' is default for other parts
 	$self->quadding ('start');
+
+	$part_num ++;
     }
     $self->pop;
 
     return $data;
 }
 
+sub row_sep {
+    my ($col_widths, $frame, $csep) = @_;
+
+    my @entries;
+    my $ii;
+    for ($ii = 0; $ii <= $#$col_widths; $ii ++) {
+	push (@entries, $csep x $col_widths->[$ii]);
+    }
+    my $pre = ($frame =~ /none/i) ? "" : "+$csep";
+    my $post = ($frame =~ /none/i) ? "" : "$csep+";
+    my $sep = ($frame =~ /none/i) ? "   " : "$csep+$csep";
+    return ($pre . join ($sep, @entries) . $post);
+}
+
 sub merge_entries {
-    my ($col_widths, @entries) = @_;
+    my ($col_widths, $frame, @entries) = @_;
     my (@splits, $ii);
     my ($data) = "";
 
@@ -408,7 +430,7 @@ sub merge_entries {
 	$done = 1;
 	for ($ii = 0; $ii <= $#{$col_widths}; $ii ++) {
 	    my ($col_width) = $col_widths->[$ii];
-	    if ($ii == $#{$col_widths}) {
+	    if ($frame =~ /none/i && $ii == $#{$col_widths}) {
 		# Leave off extra space at end of line
 		$col_width = length ($splits[$ii]->[0]);
 	    }
@@ -420,7 +442,10 @@ sub merge_entries {
 	    }
 	    ($#{$splits[$ii]} != -1) && ($done = 0);
 	}
-	$data .= join ("   ", @line) . "\n";
+	my $pre = ($frame =~ /none/i) ? "" : "| ";
+	my $post = ($frame =~ /none/i) ? "" : " |";
+	my $sep = ($frame =~ /none/i) ? "   " : " | ";
+	$data .= $pre . join ($sep, @line) . "$post\n";
     }
 
     return $data;

@@ -1,11 +1,10 @@
+use lib "/home/ken/src/Class-Visitor/blib/arch";
+use lib "/home/ken/src/Class-Visitor/blib/lib";
 use lib "/home/ken/src/SGML-SPGrove/blib/arch";
 use lib "/home/ken/src/SGML-SPGrove/blib/lib";
 use lib "lib";
 
 $specs_dir = '/home/ken/src/Quilt/specs';
-
-# XXX awaiting SPGrove classes using Class::Visitor
-@SGML::SData::Iter::ISA = qw{Class::Iter};
 
 use Getopt::Long;
 use SGML::SPGrove;
@@ -103,22 +102,5 @@ sub load_doc {
 package SGML::Element;
 
 package SGML::SData;
-sub iter {
-    my $iter = [@_];
-    bless $iter, 'SGML::SData::Iter';
-}
 
 package SGML::PI;
-
-package SGML::SData::Iter;
-
-sub accept {
-    my $self = shift; my $visitor = shift;
-
-    $visitor->visit_SGML_SData ($self, @_);
-}
-
-sub data {
-    my $self = shift;
-    return ($self->[0]->data);
-}

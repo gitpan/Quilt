@@ -159,7 +159,18 @@ $replaceable->children_accept ($self, $obj, @_);
     <rule>
       <query/Quilt_DO_Inline_Emphasis/ <make/Flow (font_posture: 'italic', inline: 1)/
 
-    <rule><query/Quilt_Flow_Table/ <holder>
+    <rule><query/Quilt_Flow_Table/ <code><![CDATA[
+my $self = shift; my $table = shift; my $parent = shift;
+my $obj = new Quilt::HTML::Table;
+$parent->push ($obj);
+my $ii;
+my $parts = $table->delegate->parts;
+for ($ii = 0; $ii <= $#$parts; $ii ++) {
+    my $iter = $parts->[$ii]->iter ($table, $parts, $ii);
+    $iter->children_accept ($self, $obj, @_);
+}
+]]></code>
+
     <rule><query/Quilt_Flow_Table_Part/      <make/HTML::Table/
     <rule><query/Quilt_Flow_Table_Row/  <make/HTML::Table::Row/
     <rule><query/Quilt_Flow_Table_Cell/ <make/HTML::Table::Data/

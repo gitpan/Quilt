@@ -18,7 +18,7 @@ if ($#$title != -1) {
 }
 my $abstract = $document->abstract;
 if (defined $abstract) {
-    my $obj = new Quilt::Flow::Paragraph (space_before => 6, space_after => 4,
+    my $obj = new Quilt::Flow::Paragraph (space_before => 6, space_after => 1,
                      quadding => 'center');
     $parent->push ($obj);
     $obj->push ("ABSTRACT");
@@ -163,7 +163,9 @@ my $self = shift; my $item = shift; my $parent = shift;
 my $obj = new Quilt::Flow (space_before => 1, space_after => 1,
                     inline => 0);
 # XXX iterator
-my $list_type = $item->parent->type;
+my $list_type;
+eval {$list_type = $item->parent->type};
+$list_type = 'itemized' if !defined $list_type;
 $parent->push ($obj);
 if ($list_type eq 'itemized' || $list_type eq 'ordered') {
     # XXX `is_mark' hack
@@ -259,8 +261,10 @@ my $name = $xref->as_string;
 
 if (($url eq "") || ($url =~ m/mailto:$name/)) {
     my $obj = new Quilt::Flow (inline => 1);
+    $self->{quoting}++ or $parent->push (new SGML::SData ('[lsquo ]'));
     $parent->push ($obj);
     $xref->children_accept ($self, $obj, @_);
+    --$self->{quoting} or $parent->push (new SGML::SData ('[rsquo ]'));
 } elsif (($name ne "") && ($name ne $url)) {
     my $obj = new Quilt::Flow (inline => 1);
     $parent->push ($obj);
@@ -270,6 +274,16 @@ if (($url eq "") || ($url =~ m/mailto:$name/)) {
     $parent->push ($url);
 }
 ]]></code>
+
+    <rule><query/Quilt_DO_XRef_End/
+      <code><![CDATA[
+my $self = shift; my $quote = shift; my $parent = shift;
+$self->{quoting}++ or $parent->push (new SGML::SData ('[ldquo ]'));
+$quote->children_accept ($self, $parent, @_);
+--$self->{quoting} or $parent->push (new SGML::SData ('[rdquo ]'));
+]]></code>
+
+    <rule><query/Quilt_DO_XRef_Anchor/  <ignore>
 
   <rule><query/scalar/
     <code><![CDATA[

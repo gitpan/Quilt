@@ -1,7 +1,14 @@
+#
+# Copyright (C) 1997 Ken MacLeod
+# See the file COPYING for distribution terms.
+#
+# $Id: Quilt.pm,v 1.4 1997/11/03 17:46:46 ken Exp $
+#
+
 package Quilt;
 use vars qw{$VERSION};
 
-$VERSION = '0.02';
+$VERSION = '0.04';
 
 use Class::Visitor;
 use Quilt::Flow::Table;
@@ -14,7 +21,8 @@ use strict;
 visitor_class 'Quilt', 'Class::Visitor::Base', {};
 
 visitor_class 'Quilt::Flow', 'Quilt', {
-    'contents' => '@',
+    contents => '@',
+    id => '$',
     inline => '$',
     is_mark => '$',		# XXX hack, hack, hack
     lines => '$',
@@ -28,11 +36,12 @@ visitor_class 'Quilt::Flow', 'Quilt', {
 
 visitor_class 'Quilt::DO::Document', 'Quilt', {
     contents => '@',
+    id => '$',
     title => '@',
     subtitle => '@',
     authors => '@',
-    abstract => '$',
-    date => '$',
+    abstract => '@',
+    date => '@',
 };
 
 visitor_class 'Quilt::DO::Struct::Section', 'Quilt::Flow', {
@@ -71,6 +80,7 @@ visitor_class 'Quilt::DO::List::Term', 'Quilt::Flow', {};
 
 visitor_class 'Quilt::DO::Author', 'Quilt', {
     contents => '@',
+    id => '$',
     formatted_name => '@',
     family_name => '@',
     given_name => '@',
@@ -82,15 +92,8 @@ visitor_class 'Quilt::DO::Author', 'Quilt', {
     postal_code => '@',
     country => '@',
     email => '@',
-};
-
-visitor_class 'Quilt::DO::Document', 'Quilt', {
-    contents => '@',
-    title => '@',
-    subtitle => '@',
-    authors => '@',
-    abstract => '@',
-    date => '@',
+    url => '@',
+    blurb => '@',
 };
 
 visitor_class 'Quilt::DO::Inline', 'Quilt::Flow', {};
@@ -111,7 +114,10 @@ visitor_class 'Quilt::DO::XRef', 'Quilt', {};
 visitor_class 'Quilt::DO::XRef::URL', 'Quilt::Flow', {
     url => '$',
 };
-visitor_class 'Quilt::DO::XRef::End', 'Quilt', {};
+visitor_class 'Quilt::DO::XRef::End', 'Quilt::Flow', {};
+visitor_class 'Quilt::DO::XRef::Anchor', 'Quilt', {
+    id => '$',
+};
 
 visitor_class 'Quilt::Flow::DisplaySpace', 'Quilt', {
     space => '$',
@@ -120,16 +126,25 @@ visitor_class 'Quilt::Flow::DisplaySpace', 'Quilt', {
 
 visitor_class 'Quilt::Flow::Table', 'Quilt', {
     contents => '@',
+    id => '$',
+    frame => '$',
+    colsep => '$',
+    rowsep => '$',
+    page_wide => '$',
 };
+
 visitor_class 'Quilt::Flow::Table::Part', 'Quilt', {
     contents => '@',
+    id => '$',
     type => '$',
 };
 visitor_class 'Quilt::Flow::Table::Row', 'Quilt', {
     contents => '@',
+    id => '$',
 };
 visitor_class 'Quilt::Flow::Table::Cell', 'Quilt', {
     contents => '@',
+    id => '$',
 };
 
 package Quilt::Flow::Display;

@@ -4,6 +4,8 @@
   <head>
     <defaultobject>Quilt::Flow</defaultobject>
     <defaultprefix>Quilt</defaultprefix>
+    <use-gi>
+    <copy-id>
   <rules>
     <rule><query/BOOK ARTICLE/  <make/DO::Document/
       <rules>
@@ -13,7 +15,7 @@
 	  <rules>
 	    <rule><query/TITLE/         <port/title/
 	    <rule><query/TITLEABBREV/   <port/title_abbr/
-	    <rule><query/SUBTITLE/      <port/sub_title/
+	    <rule><query/SUBTITLE/      <port/subtitle/
 	    <rule><query/EDITION/       <holder> <!-- <port/edition/ -->
 	    <rule><query/ABSTRACT/      <port/abstract/
 	    <rule><query/AUTHORGROUP/   <holder>
@@ -49,7 +51,7 @@
 		    </rule>
 		  </rules> <!-- AFFILIATION -->
 		</rule>
-		<rule><query/AUTHORBLURB/   <port/author-blurb/
+		<rule><query/AUTHORBLURB/   <port/blurb/
 		<rule><query/CONTRIB/       <port/contrib/
 	      </rules>
 		 <!-- AUTHOR -->

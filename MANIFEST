@@ -4,7 +4,7 @@ Changes
 MANIFEST
 Makefile.PL
 Quilt.spec
-Quilt-0.02.spec
+Quilt-0.04.spec
 README
 ToDo
 lib/Quilt.pm

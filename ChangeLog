@@ -1,3 +1,47 @@
+Sun Nov  2 21:53:50 1997  Ken MacLeod  <ken@bitsko.slc.ut.us>
+
+	* specs/toAscii.spec: fix spacing in `ABSTRACT', add quotes in mail URLs
+	(Quilt_DO_XRef_End): added
+	
+	* specs/linuxdoc.spec: fix `REF' and `LABEL'
+
+	* specs/teilite.spec, specs/docbook.spec, specs/linuxdoc.spec:
+ 	use-gi
+
+	* tmpfront.sh: mv `no_gi' to spec's `use-gi'
+
+	* lib/Quilt.pm: add `id' to classes
+	Quilt::DO::Document: remove redundant copy
+	Quilt::DO::Author: add `url' and `blurb'
+	
+Sat Nov  1 15:29:42 1997  Ken MacLeod  <ken@bitsko.slc.ut.us>
+
+	* specs/docbook.spec: change `sub_title' to `subtitle', change
+ 	`author_blurb' to `blurb'
+
+Fri Oct 31 12:24:37 1997  Ken MacLeod  <ken@bitsko.slc.ut.us>
+
+	* lib/Quilt.pm (Quilt::Flow): add `id'
+
+Sat Oct 25 14:45:09 1997  Ken MacLeod  <ken@bitsko.slc.ut.us>
+
+	* Quilt.spec (%files): correct pathnames
+
+	* specs/wrHTML.spec: correct several element names
+	(Table_Data): check for empty cell and use &nbsp;
+	
+	* specs/toHTML.spec (Table): allow table made of multiple parts
+
+	* specs/toAscii.spec (List_Item): allow list items outside of
+ 	lists
+
+	* lib/Quilt/HTML.pm: added `frame' to HTML::Table
+
+	* README: added info about Quilt mailing list
+
+	* lib/Quilt/Writer/Ascii.pm (row_sep): added
+	(format_table): add framing
+
 Fri Oct 24 10:58:49 1997  Ken MacLeod  <ken@bitsko.slc.ut.us>
 
 	* specs/toAscii.spec, specs/wrAscii.spec: added tables

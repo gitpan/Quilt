@@ -10,7 +10,7 @@ Packager: ken@bitsko.slc.ut.us (Ken MacLeod)
 BuildRoot: /tmp/Quilt
 
 #
-# $Id: Quilt.spec,v 1.1 1997/10/22 21:59:12 ken Exp $
+# $Id: Quilt.spec,v 1.2 1997/10/25 21:49:28 ken Exp $
 #
 
 %description
@@ -43,18 +43,18 @@ make PREFIX="${RPM_ROOT_DIR}/usr" pure_install
 
 %doc README Changes test.pl
 
-/lib/perl5/Quilt.pm
-/lib/perl5/Quilt/DO/Document.pm
-/lib/perl5/Quilt/DO/Inline.pm
-/lib/perl5/Quilt/DO/Author.pm
-/lib/perl5/Quilt/DO/Struct.pm
-/lib/perl5/Quilt/DO/XRef.pm
-/lib/perl5/Quilt/DO/Block.pm
-/lib/perl5/Quilt/DO/List.pm
-/lib/perl5/Quilt/Writer/HTML.pm
-/lib/perl5/Quilt/Writer/Ascii.pm
-/lib/perl5/Quilt/Context.pm
-/lib/perl5/Quilt/HTML.pm
-/lib/perl5/Quilt/Flow/Inline.pm
-/lib/perl5/Quilt/Flow/Display.pm
-/lib/perl5/Quilt/Flow/Table.pm
+/usr/lib/perl5/Quilt.pm
+/usr/lib/perl5/Quilt/DO/Document.pm
+/usr/lib/perl5/Quilt/DO/Inline.pm
+/usr/lib/perl5/Quilt/DO/Author.pm
+/usr/lib/perl5/Quilt/DO/Struct.pm
+/usr/lib/perl5/Quilt/DO/XRef.pm
+/usr/lib/perl5/Quilt/DO/Block.pm
+/usr/lib/perl5/Quilt/DO/List.pm
+/usr/lib/perl5/Quilt/Writer/HTML.pm
+/usr/lib/perl5/Quilt/Writer/Ascii.pm
+/usr/lib/perl5/Quilt/Context.pm
+/usr/lib/perl5/Quilt/HTML.pm
+/usr/lib/perl5/Quilt/Flow/Inline.pm
+/usr/lib/perl5/Quilt/Flow/Display.pm
+/usr/lib/perl5/Quilt/Flow/Table.pm

@@ -89,36 +89,42 @@ print "</$type>\n\n";
     <rule>
       <query/Quilt_HTML_List_Term/
       <code><![CDATA[
-my $self = shift; my $list_item = shift; my $context = shift;
+my $self = shift; my $list_term = shift; my $context = shift;
 print "<DT>";
-$list_item->children_accept ($self, $context, @_);
+$list_term->children_accept ($self, $context, @_);
 print "</DT>\n\n";
 ]]></code>
 
     <rule>
       <query/Quilt_HTML_Table/
       <code><![CDATA[
-my $self = shift; my $list_item = shift; my $context = shift;
-print "<TABLE>\n";
-$list_item->children_accept ($self, $context, @_);
+my $self = shift; my $table = shift; my $context = shift;
+my $border = ($table->frame =~ /none/i) ? "" : " BORDER";
+print "<TABLE$border>\n";
+$table->children_accept ($self, $context, @_);
 print "</TABLE>\n\n";
 ]]></code>
 
     <rule>
       <query/Quilt_HTML_Table_Row/
       <code><![CDATA[
-my $self = shift; my $list_item = shift; my $context = shift;
+my $self = shift; my $row = shift; my $context = shift;
 print "  <TR>\n";
-$list_item->children_accept ($self, $context, @_);
+$row->children_accept ($self, $context, @_);
 print "  </TR>\n";
 ]]></code>
 
     <rule>
       <query/Quilt_HTML_Table_Data/
       <code><![CDATA[
-my $self = shift; my $list_item = shift; my $context = shift;
+my $self = shift; my $data = shift; my $context = shift;
 print "    <TD>";
-$list_item->children_accept ($self, $context, @_);
+my $data_str = $data->as_string;
+if ($data_str =~ /^\s*$/s) {
+    print "&nbsp;";
+} else {
+    $data->children_accept ($self, $context, @_);
+}
 print "</TD>\n";
 ]]></code>
 

@@ -4,6 +4,8 @@
   <head>
     <defaultobject>Quilt::Flow</defaultobject>
     <defaultprefix>Quilt</defaultprefix>
+    <use-gi>
+    <copy-id>
   <rules>
     <rule><query/LINUXDOC/     <make/DO::Document/
     <rule><query/ARTICLE/      <holder>
@@ -155,12 +157,18 @@ $tag->children_accept_gi ($self, $obj, @_);
     <rule><query/SL/      <make/DO::Inline/
     <rule><query/IT/      <make/DO::Inline/
 
-                      <!-- XXX Oops, where did that URL go to? -->
     <rule><query/HTMLURL/ <make>DO::XRef::URL (url: <attr/URL/, contents: [<attr/NAME/])</make>
     <rule><query/URL/     <make>DO::XRef::URL (url: <attr/URL/, contents: [<attr/NAME/])</make>
-    <rule><query/REF/     <make>DO::XRef::End (link: <attr/ID/)</make>
-    <rule><query/NEWLINE/ <make/DO::Inline/
+    <!-- REF uses `ID' as it's `LINK' attribute, so we don't want to
+         automatically make a reference out of it -->
+    <rule><query/REF/     <code><![CDATA[
+  my $self = shift; my $element = shift; my $parent = shift;
+  my $obj = new Quilt::DO::XRef::End (link => $element->attr_as_string ('ID'),
+ contents => $element->attr ('NAME'));
+  $parent->push ($obj);
+]]></code>
+    <rule><query/LABEL/   <make/DO::XRef::Anchor/
 
-    <rule><query/LABEL/   <make/DO::Inline/
+    <rule><query/NEWLINE/ <make/DO::Inline/
   </rules>
 </spec>
