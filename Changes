@@ -1,0 +1,12 @@
+Revision history for Perl extension Quilt.
+
+0.02  Fri Oct 24 18:58:51 CDT 1997
+	- wrHTML: use cool TABLE look for PRE
+	- toHTML: use `make' syntax on some elements
+	- added table support (LinuxDoc input, HTML and Ascii output)
+	- fixes
+	  - LinuxDoc: DESCRIP moves stray content into Items
+
+0.01  Sun Oct 19 21:33:11 1997
+	- original version; created by h2xs 1.16
+

@@ -1,0 +1,30 @@
+Fri Oct 24 10:58:49 1997  Ken MacLeod  <ken@bitsko.slc.ut.us>
+
+	* specs/toAscii.spec, specs/wrAscii.spec: added tables
+
+
+	* lib/Quilt/Writer/Ascii.pm (format_table, merge_entries): added
+
+	* lib/Quilt/Flow/Table.pm: add part, row, and column counting
+ 	methods
+
+	* lib/Quilt.pm: use Quilt::Flow::Table;
+
+	* specs/wrHTML.spec: use cool TABLE look for PRE
+
+	* specs/toHTML.spec: use `make' syntax on some elements
+
+	* specs/linuxdoc.spec: DESCRIP moves stray content into Items
+
+	* specs/toHTML.spec, specs/wrHTML.spec, lib/Quilt/HTML.pm,
+ 	specs/linuxdoc.spec: added table support
+
+	* specs/teilite.spec: use new-style transform
+
+Wed Oct 22 16:13:02 1997  Ken MacLeod  <ken@bitsko.slc.ut.us>
+
+	* MANIFEST: added Quilt.spec
+
+	* Quilt.spec: added
+
+	* MANIFEST: fill out
