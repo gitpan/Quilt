@@ -1,11 +1,10 @@
 <!-- -*- sgml -*- -->
-<!DOCTYPE spec PUBLIC "-//Ken MacLeod//DTD SPGrove Simple Spec//EN">
+<!DOCTYPE spec PUBLIC "-//Ken MacLeod//DTD Grove Simple Spec//EN">
 <spec>
   <head>
     <defaultobject>Quilt::Flow</defaultobject>
     <defaultprefix>Quilt</defaultprefix>
     <use-gi>
-    <copy-id>
   <rules>
     <rule><query/LINUXDOC/     <make/DO::Document/
     <rule><query/ARTICLE/      <holder>
@@ -41,7 +40,7 @@
 my $self = shift; my $table = shift; my $parent = shift;
 my $tabular = new Quilt::Flow::Table::Part;
 $parent->push ($tabular);
-$table->children_accept_gi ($self, $tabular, @_);
+$table->children_accept_gi ($self, $tabular->iter($parent), @_);
 
 # gather any stray non-table stuff into a cell
 my @cell;
@@ -117,7 +116,7 @@ my $self = shift; my $list = shift; my $parent = shift;
 
 my $obj = new Quilt::DO::List (type => 'variable');
 $parent->push ($obj);
-$list->children_accept_gi ($self, $obj, @_);
+$list->children_accept_gi ($self, $obj->iter($parent), @_);
 
 # gather any stray non-list stuff into an item
 my $obj_contents = $obj->contents;
@@ -147,7 +146,7 @@ if ($#item != -1) {
 }
 my $obj = new Quilt::DO::List::Term;
 $parent->push ($obj);
-$tag->children_accept_gi ($self, $obj, @_);
+$tag->children_accept_gi ($self, $obj->iter($parent), @_);
 ]]></code>
     <rule><query/TT/      <make/DO::Inline::Literal/
     <rule><query/CPARAM/  <make/DO::Inline::Emphasis/
@@ -162,20 +161,28 @@ $tag->children_accept_gi ($self, $obj, @_);
   my $self = shift; my $element = shift; my $parent = shift;
   my $obj = new Quilt::DO::XRef::URL (url => $element->attr_as_string ('URL'));
   $parent->push ($obj);
-  my $name = $element->as_string;
+  my $name = $element->attr_as_string ('NAME');
   if ($name ne '@@URLNAM') {
-    $obj->{'contents'} = $element->contents;
+    $obj->{'contents'} = $element->attr ('NAME');
   }
 ]]></code>
-    <!-- REF uses `ID' as it's `LINK' attribute, so we don't want to
-         automatically make a reference out of it -->
     <rule><query/REF/     <code><![CDATA[
   my $self = shift; my $element = shift; my $parent = shift;
   my $obj = new Quilt::DO::XRef::End (link => $element->attr_as_string ('ID'),
  contents => $element->attr ('NAME'));
   $parent->push ($obj);
 ]]></code>
-    <rule><query/LABEL/   <make/DO::XRef::Anchor/
+    <rule><query/LABEL/     <code><![CDATA[
+  my $self = shift; my $element = shift; my $parent = shift;
+  my $id = $element->attr_as_string ('ID');
+  my $ii;
+  for ($ii = $parent; $ii != undef; $ii = $parent->parent) {
+    if ("$ii" =~ /:(Section|Formal):/) {
+        $ii->id ($id);
+        last;
+    }
+  }
+]]></code>
 
     <rule><query/NEWLINE/ <make/DO::Inline/
   </rules>

@@ -2,7 +2,7 @@
 # Copyright (C) 1997 Ken MacLeod
 # See the file COPYING for distribution terms.
 #
-# $Id: Author.pm,v 1.1.1.1 1997/10/22 21:35:09 ken Exp $
+# $Id: Author.pm,v 1.2 1998/03/09 03:18:15 ken Exp $
 #
 
 #
@@ -10,31 +10,43 @@
 # http://www.versit.com/
 #
 
-use Quilt;
-
+package Quilt::DO::Author;
 use strict;
 
-package Quilt::DO::Author;
+use Quilt;
 
+# $self may be an Iter
 sub name {
-    my ($self) = @_;
+    my $self = shift; my $builder = shift; my $parent = shift;
 
-    if ($self->{'formatted_name'}) {
-	return ($self->{'formatted_name'}->as_string);
-    } elsif ($self->{'given_name'} || $self->{'family_name'}) {
-	my (@names);
-	push (@names, $self->{'given_name'}->as_string)
-	    if ($self->{'givenname'});
-	push (@names, $self->{'family_name'}->as_string)
-	    if ($self->{'family_name'});
-	return (join (" ", @names));
-    } elsif ($self->{'other_name'}) {
-	return ($self->{'other_name'}->as_string);
-    } elsif ($self->{'content'}) {
-	return ($self->as_string);
+    my $formatted_name = $self->formatted_name;
+    if (defined $formatted_name	&& $#$formatted_name != -1) {
+	$self->children_accept_formatted_name ($builder, $parent, @_);
+	return;
     }
 
-    return undef;
+    my $given_name = $self->given_name;
+    my $family_name = $self->family_name;
+    if ((defined $given_name && $#$given_name != -1)
+	|| (defined $family_name && $#$family_name != -1)) {
+	$self->children_accept_given_name ($builder, $parent, @_);
+
+	# push a space if both a given and a family name
+	if ((defined $given_name && $#$given_name != -1)
+	    && (defined $family_name && $#$family_name != -1)) {
+	    $parent->push (" ");
+	}
+
+	$self->children_accept_family_name ($builder, $parent, @_);
+	return;
+    }
+
+    my $other_name = $self->other_name;
+    if (defined $other_name && $#$other_name != -1) {
+	$self->children_accept_other_name ($builder, $parent, @_);
+    }
+
+    $self->children_accept ($builder, $parent, @_);
 }
 
 sub address {
@@ -67,6 +79,12 @@ sub address {
 	if (defined $self->{'country'});
 
     return $str;
+}
+
+package Quilt::DO::Author::Iter;
+
+sub name {
+    &Quilt::DO::Author::name;
 }
 
 1;

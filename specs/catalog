@@ -1,3 +1,9 @@
+--
+
+    $Id: catalog,v 1.1 1998/02/09 00:57:45 ken Exp $
+
+--
+
 PUBLIC "-//Ken MacLeod//SPEC GDO DocBook Spec//EN" docbook.spec
 PUBLIC "-//Ken MacLeod//SPEC GDO TEI Lite Spec//EN" teilite.spec
 PUBLIC "-//Ken MacLeod//SPEC GDO LinuxDoc Spec//EN" linuxdoc.spec

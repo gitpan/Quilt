@@ -1,5 +1,5 @@
 <!-- -*- sgml -*- -->
-<!DOCTYPE spec PUBLIC "-//Ken MacLeod//DTD SPGrove Simple Spec//EN">
+<!DOCTYPE spec PUBLIC "-//Ken MacLeod//DTD Grove Simple Spec//EN">
 <spec>
   <head>
     <defaultobject>ick-none</defaultobject>
@@ -10,10 +10,55 @@
       <code><![CDATA[
 my $self = shift; my $document = shift; my $parent = shift;
 my $title = $document->title;
-if (defined $title) {
+if (defined $title && $#$title != -1) {
     my $obj = new Quilt::HTML::Title (level => 1, quadding => 'center');
     $parent->push ($obj);
     $document->children_accept_title ($self, $obj, @_);
+}
+my $subtitle = $document->subtitle;
+if (defined $subtitle && $#$subtitle != -1) {
+    my $obj = new Quilt::HTML::Title (level => 2, quadding => 'center');
+    $parent->push ($obj);
+    $document->children_accept_title ($self, $obj, @_);
+}
+my $authors = $document->authors;
+if (defined $authors && $#$authors != -1) {
+    my $author;
+
+    my $author_count = $#$authors;
+    foreach $author (@$authors) {
+        my $author_iter = $author->iter($document);
+        # FIXME we don't want to push a paragraph if `name' doesn't
+        # contain anything, but it's a compound object and we don't
+        # have a way to see if there is one without actuall calling it
+        my $obj = new Quilt::HTML::Title (level => 2, quadding => 'center');
+        $parent->push ($obj);
+        $author_iter->name ($self, $obj, @_);
+
+        my $title = $author_iter->title;
+        if (defined $title && $#$title != -1) {
+            $obj = new Quilt::HTML::Title (level => 3, quadding => 'center');
+            $parent->push ($obj);
+            $author_iter->children_accept_title ($self, $obj, @_);
+        }
+
+        my $org_name = $author_iter->org_name;
+        if (defined $org_name && $#$org_name != -1) {
+            $obj = new Quilt::HTML::Title (level => 3, quadding => 'center');
+            $parent->push ($obj);
+            $author_iter->children_accept_org_name ($self, $obj, @_);
+        }
+
+        if ($author_count-- != 0) {
+            $parent->push (new Quilt::Flow::DisplaySpace (space => 1));
+        }
+    }
+}
+my $date = $document->date;
+if (defined $date && $#$date != -1) {
+    my $obj = new Quilt::Flow::Paragraph (quadding => 'center');
+    $parent->push ($obj);
+    $document->children_accept_date ($self, $obj, @_);
 }
 my $abstract = $document->abstract;
 if (defined $abstract) {
@@ -24,7 +69,42 @@ if (defined $abstract) {
     $parent->push ($obj);
     $document->children_accept_abstract ($self, $obj, @_);
 }
+my $obj = new Quilt::HTML::Title (level => 3, quadding => 'center');
+$parent->push ($obj);
+$obj->push ("Table of Contents");
+my $toc = new Quilt::HTML::List (type => 'UL');
+$parent->push ($toc);
+$document->children_accept (Quilt::TOC->new, $self, $toc);
 $document->children_accept ($self, $parent, @_);
+]]></code>
+
+    <rule>
+      <query/TOC/
+      <code><![CDATA[
+    my $self = shift; my $toc_visitor = shift; my $section = shift; my $toc = shift;
+
+    my $id = $section->generated_id;
+    $id = $section->id if (!defined $id || $id eq "");
+    if (!defined $id || $id eq "") {
+        $id = "t" . ++$main::unique;
+        $section->generated_id ($id);
+    }
+    my $li = new Quilt::HTML::List::Item;
+    $toc->push ($li);
+    # FIXME needs sub-doc URL
+    my $a = new SGML::Element ([], "A", {href => ["#$id"]});
+    $li->push ($a);
+    my @section_nums = $section->numbers;
+    if ($#section_nums != -1) {
+        $a->push (join (".", @section_nums) . ".");
+        $a->push (new SGML::SData ('[nbsp  ]'));
+        $a->push (new SGML::SData ('[nbsp  ]'));
+    }
+    $section->children_accept_title ($self, $a, @_);
+
+    my $sub_toc = new Quilt::HTML::List (type => 'UL');
+    $li->push ($sub_toc);
+    $section->children_accept ($toc_visitor, $self, $sub_toc, @_);
 ]]></code>
 
     <rule>
@@ -39,13 +119,23 @@ my $title = $section->title;
 if (defined $title) {
     my $obj = new Quilt::HTML::Title (level => $section->level);
     $parent->push ($obj);
+
+    my $id = $section->generated_id;
+    $id = $section->id if (!defined $id || $id eq "");
+    if (!defined $id || $id eq "") {
+        $id = "t" . ++$main::unique;
+        $section->generated_id ($id);
+    }
+    my $a = new SGML::Element ([], "A", {name => [$id]});
+    $obj->push ($a);
+
     my @section_nums = $section->numbers;
     if ($#section_nums != -1) {
-        $obj->push (join (".", @section_nums) . ".");
-        $obj->push (new SGML::SData ('[nbsp  ]'));
-        $obj->push (new SGML::SData ('[nbsp  ]'));
+        $a->push (join (".", @section_nums) . ".");
+        $a->push (new SGML::SData ('[nbsp  ]'));
+        $a->push (new SGML::SData ('[nbsp  ]'));
     }
-    $section->children_accept_title ($self, $obj, @_);
+    $section->children_accept_title ($self, $a, @_);
 }
 $section->children_accept ($self, $parent, @_);
 ]]></code>
@@ -145,10 +235,10 @@ $parent->push ($obj);
 
     <rule><query/Quilt_DO_XRef_End/
       <code><![CDATA[
-my $self = shift; my $end = shift; my $parent = shift;
-my $obj = new SGML::Element ([], "A", {href => ["#" . $end->link]});
+my $self = shift; my $xref_end = shift; my $parent = shift;
+my $obj = new SGML::Element ([], "A", {href => ["#" . $xref_end->link]});
 $parent->push ($obj);
-#$end->children_accept ($self, $obj, @_);
+#$xref_end->children_accept ($self, $obj, @_);
 my $reference = $self->{references}->{$xref_end->link};
 $obj->push($reference->type);
 eval {

@@ -1,5 +1,5 @@
 <!-- -*- sgml -*- -->
-<!DOCTYPE spec PUBLIC "-//Ken MacLeod//DTD SPGrove Simple Spec//EN">
+<!DOCTYPE spec PUBLIC "-//Ken MacLeod//DTD Grove Simple Spec//EN">
 <spec>
   <head>
     <defaultobject>ick-none</defaultobject>

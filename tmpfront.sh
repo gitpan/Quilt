@@ -1,17 +1,16 @@
-use lib "/home/ken/src/Class-Visitor/blib/arch";
-use lib "/home/ken/src/Class-Visitor/blib/lib";
-use lib "/home/ken/src/SGML-SPGrove/blib/arch";
-use lib "/home/ken/src/SGML-SPGrove/blib/lib";
-use lib "lib";
+#! /bin/perl
 
 $specs_dir = '/home/ken/src/Quilt/specs';
 
+
 use Getopt::Long;
-use SGML::SPGrove;
+use SGML::SPGroveBuilder;
+use SGML::Grove;
 use Quilt;
 use Quilt::Writer::Ascii;
 use Quilt::Writer::HTML;
 use Quilt::XRef;
+use Quilt::TOC;
 
 use SGML::Simple::SpecBuilder;
 use SGML::Simple::BuilderBuilder;
@@ -60,7 +59,7 @@ my $base_name = $ARGV[0];
 $base_name =~ s|.*/||;
 
 if ($to_sgml) {
-    my $doc = SGML::SPGrove->new ($ARGV[0]);
+    my $doc = SGML::SPGroveBuilder->new ($ARGV[0]);
     $debug && do {$time = localtime; warn "$time  -- $base_name - loaded\n"};
     my $errors = $doc->errors;
     warn ("errors parsing $ARGV[0]\n" . join ("", @$errors))
@@ -108,7 +107,7 @@ sub spec_builder {
     my $base_name = $spec_file;
     $base_name =~ s|.*/||;
 
-    my $spec_grove = SGML::SPGrove->new ("$spec_file");
+    my $spec_grove = SGML::SPGroveBuilder->new ("$spec_file");
     $debug && do {my $time = localtime; warn "$time  -- $base_name - loaded\n"};
     my $errors = $spec_grove->errors;
     die ("errors parsing $ARGV[0]\n" . join ("", @$errors))
@@ -129,13 +128,13 @@ sub load_doc {
     my $base_name = $doc;
     $base_name =~ s|.*/||;
 
-    my $grove = SGML::SPGrove->new ($doc);
+    my $grove = SGML::SPGroveBuilder->new ($doc);
     $debug && do {$time = localtime; warn "$time  -- $base_name - loaded\n"};
     my $errors = $grove->errors;
     warn ("errors parsing $ARGV[0]\n" . join ("", @$errors))
 	if ($#$errors != -1);
     my $ot = Quilt::Flow->new();
-    $grove->accept ($builder, $ot, {});
+    $grove->accept ($builder, $ot->iter, {});
     $debug && do {$time = localtime; warn "$time  -- $base_name - build ot\n"};
 
     return $ot;
@@ -147,3 +146,25 @@ package SGML::Element;
 package SGML::SData;
 
 package SGML::PI;
+
+package Class::Iter;
+
+sub children_accept_ports {
+    my $self = shift;
+    my $delegate = $self->delegate;
+
+    # ` "$delegate" =~ /=HASH\(/ ' checks to see if a blessed
+    # reference is a hash thanks to the way Perl formats references in
+    # string context.  An unblessed hash won't match (no `=').
+    # Derived from Data::Dumper
+    # XXX in 5.004 we can use `isa()'
+    if ("$delegate" =~ /=HASH\(/) {
+	my $key;
+	foreach $key (keys %$delegate) {
+	    if (ref ($delegate->{$key}) eq 'ARRAY') {
+		my $method = "children_accept_$key";
+		eval {$self->$method (@_)};
+	    }
+	}
+    }
+}

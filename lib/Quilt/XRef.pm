@@ -2,7 +2,7 @@
 # Copyright (C) 1997 Ken MacLeod
 # See the file COPYING for distribution terms.
 #
-# $Id: XRef.pm,v 1.1 1997/12/07 01:02:51 ken Exp $
+# $Id: XRef.pm,v 1.2 1998/01/18 00:43:15 ken Exp $
 #
 
 package Quilt::XRef;
@@ -47,7 +47,7 @@ sub AUTOLOAD {
     }
 
     # XXX test specifically for undefined method
-    eval {$element->children_accept ($self, $context, @_)};
+    eval {$element->children_accept_ports ($self, $context, @_)};
 }
 
 1;

@@ -9,6 +9,7 @@ visitor_class 'Quilt', 'Class::Visitor::Base', {};
 visitor_class 'Quilt::Flow', 'Quilt', {
     contents => '@',
     id => '$',
+    generated_id => '$',
     inline => '$',
     is_mark => '$',		# XXX hack, hack, hack
     lines => '$',
@@ -23,6 +24,7 @@ visitor_class 'Quilt::Flow', 'Quilt', {
 visitor_class 'Quilt::DO::Document', 'Quilt', {
     contents => '@',
     id => '$',
+    generated_id => '$',
     title => '@',
     subtitle => '@',
     authors => '@',
@@ -67,10 +69,15 @@ visitor_class 'Quilt::DO::List::Term', 'Quilt::Flow', {};
 visitor_class 'Quilt::DO::Author', 'Quilt', {
     contents => '@',
     id => '$',
+    generated_id => '$',
     formatted_name => '@',
     family_name => '@',
     given_name => '@',
     other_name => '@',
+    title => '@',
+    org_unit => '@',
+    org_name => '@',
+    org_name_abbr => '@',
     postoffice_address => '@',
     street => '@',
     locality => '@',
@@ -105,6 +112,7 @@ visitor_class 'Quilt::DO::XRef::End', 'Quilt::Flow', {
 };
 visitor_class 'Quilt::DO::XRef::Anchor', 'Quilt', {
     id => '$',
+    generated_id => '$',
 };
 
 visitor_class 'Quilt::Flow::DisplaySpace', 'Quilt', {
@@ -115,6 +123,7 @@ visitor_class 'Quilt::Flow::DisplaySpace', 'Quilt', {
 visitor_class 'Quilt::Flow::Table', 'Quilt', {
     contents => '@',
     id => '$',
+    generated_id => '$',
     frame => '$',
     colsep => '$',
     rowsep => '$',
@@ -124,15 +133,18 @@ visitor_class 'Quilt::Flow::Table', 'Quilt', {
 visitor_class 'Quilt::Flow::Table::Part', 'Quilt', {
     contents => '@',
     id => '$',
+    generated_id => '$',
     type => '$',
 };
 visitor_class 'Quilt::Flow::Table::Row', 'Quilt', {
     contents => '@',
     id => '$',
+    generated_id => '$',
 };
 visitor_class 'Quilt::Flow::Table::Cell', 'Quilt', {
     contents => '@',
     id => '$',
+    generated_id => '$',
 };
 
 package Quilt::Flow::Display;

@@ -10,7 +10,7 @@ Packager: ken@bitsko.slc.ut.us (Ken MacLeod)
 BuildRoot: /tmp/Quilt
 
 #
-# $Id: Quilt.spec,v 1.2 1997/10/25 21:49:28 ken Exp $
+# $Id: Quilt.spec,v 1.6 1998/03/09 03:34:10 ken Exp $
 #
 
 %description
@@ -29,7 +29,7 @@ documents.
 %prep
 %setup
 
-perl Makefile.PL INSTALLDIRS=perl
+perl Makefile.PL PREFIX="${RPM_PREFIX:-/usr}" INSTALLDIRS=perl
 
 %build
 
@@ -39,9 +39,25 @@ make
 
 make PREFIX="${RPM_ROOT_DIR}/usr" pure_install
 
+SPEC_DIR="${RPM_ROOT_DIR}/usr/lib/sgml/Quilt-@VERSION@"
+mkdir -p ${SPEC_DIR}
+for ii in catalog `cd specs; echo *.spec`; do
+  cp specs/$ii "${SPEC_DIR}/$ii"
+  chmod 644 "${SPEC_DIR}/$ii"
+done
+
+mkdir -p "${RPM_ROOT_DIR}/usr/bin"
+sed <tmpfront.sh >"${RPM_ROOT_DIR}/usr/bin/sroff" \
+  -e "s|/home/ken/src/Quilt/specs|${RPM_PREFIX:-/usr}/lib/sgml/Quilt-@VERSION@|" \
+  -e "s|/bin/perl|`which perl`|"
+chmod 755 "${RPM_ROOT_DIR}/usr/bin/sroff"
+
 %files
 
-%doc README Changes test.pl
+%doc README PROJECTS Changes test.pl
+
+/usr/bin/sroff
+/usr/lib/sgml/Quilt-@VERSION@
 
 /usr/lib/perl5/Quilt.pm
 /usr/lib/perl5/Quilt/DO/Document.pm
@@ -55,6 +71,9 @@ make PREFIX="${RPM_ROOT_DIR}/usr" pure_install
 /usr/lib/perl5/Quilt/Writer/Ascii.pm
 /usr/lib/perl5/Quilt/Context.pm
 /usr/lib/perl5/Quilt/HTML.pm
+/usr/lib/perl5/Quilt/Objs.pm
+/usr/lib/perl5/Quilt/TOC.pm
+/usr/lib/perl5/Quilt/XRef.pm
 /usr/lib/perl5/Quilt/Flow/Inline.pm
 /usr/lib/perl5/Quilt/Flow/Display.pm
 /usr/lib/perl5/Quilt/Flow/Table.pm

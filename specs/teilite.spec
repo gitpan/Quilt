@@ -1,5 +1,5 @@
 <!-- -*- sgml -*- -->
-<!DOCTYPE spec PUBLIC "-//Ken MacLeod//DTD SPGrove Simple Spec//EN">
+<!DOCTYPE spec PUBLIC "-//Ken MacLeod//DTD Grove Simple Spec//EN">
 <spec>
   <head>
     <defaultobject>Quilt::Flow</defaultobject>
@@ -53,7 +53,7 @@ else { $type = 'itemized'; }
 
 my $obj = new Quilt::DO::List (type => $type);
 $parent->push ($obj);
-$list->children_accept_gi ($self, $obj, @_);
+$list->children_accept_gi ($self, $obj->iter($parent), @_);
 ]]></code>
 
     <rule><query/LABEL/     <make/DO::List::Term/
@@ -87,7 +87,7 @@ if ($rend =~ /display/i) {
     $obj = new Quilt::DO::Inline::Quote;
 }
 $parent->push ($obj);
-$q->children_accept_gi ($self, $obj, @_);
+$q->children_accept_gi ($self, $obj->iter($parent), @_);
 ]]></code>
   </rules>
 </spec>

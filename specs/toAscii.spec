@@ -1,5 +1,5 @@
 <!-- -*- sgml -*- -->
-<!DOCTYPE spec PUBLIC "-//Ken MacLeod//DTD SPGrove Simple Spec//EN">
+<!DOCTYPE spec PUBLIC "-//Ken MacLeod//DTD Grove Simple Spec//EN">
 <spec>
   <head>
     <defaultobject>ick-none</defaultobject>
@@ -10,11 +10,62 @@
       <code><![CDATA[
 my $self = shift; my $document = shift; my $parent = shift;
 my $title = $document->title;
-if ($#$title != -1) {
+if (defined $title && $#$title != -1) {
     my $obj = new Quilt::Flow::Paragraph (space_before => 6, space_after => 4,
                      quadding => 'center');
     $parent->push ($obj);
     $document->children_accept_title ($self, $obj, @_);
+}
+my $subtitle = $document->subtitle;
+if (defined $subtitle && $#$subtitle != -1) {
+    # force only two lines between title and subtitle
+    $parent->push (new Quilt::Flow::DisplaySpace (space => 2, priority => 5));
+    my $obj = new Quilt::Flow::Paragraph (space_before => 2, space_after => 4,
+                     quadding => 'center');
+    $parent->push ($obj);
+    $document->children_accept_subtitle ($self, $obj, @_);
+}
+my $authors = $document->authors;
+if (defined $authors && $#$authors != -1) {
+    my $author;
+
+    foreach $author (@$authors) {
+        my $author_iter = $author->iter($document);
+        # FIXME we don't want to push a paragraph if `name' doesn't
+        # contain anything, but it's a compound object and we don't
+        # have a way to see if there is one without actuall calling it
+        my $obj = new Quilt::Flow::Paragraph (space_before => 1, space_after => 0,
+                     quadding => 'center');
+        $parent->push ($obj);
+        $author_iter->name ($self, $obj, @_);
+
+        my $title = $author_iter->title;
+        if (defined $title && $#$title != -1) {
+            $obj = new Quilt::Flow::Paragraph (space_before => 0, space_after => 0,
+                     quadding => 'center');
+            $parent->push ($obj);
+            $author_iter->children_accept_title ($self, $obj, @_);
+        }
+
+        my $org_name = $author_iter->org_name;
+        if (defined $org_name && $#$org_name != -1) {
+            $obj = new Quilt::Flow::Paragraph (space_before => 0, space_after => 0,
+                         quadding => 'center');
+            $parent->push ($obj);
+            $author_iter->children_accept_org_name ($self, $obj, @_);
+        }
+
+        # XXX org_unit
+        $parent->push (new Quilt::Flow::DisplaySpace (space => 1));
+    }
+    $parent->push (new Quilt::Flow::DisplaySpace (space => 4));
+}
+my $date = $document->date;
+if (defined $date && $#$date != -1) {
+    my $obj = new Quilt::Flow::Paragraph (space_before => 2, space_after => 4,
+                     quadding => 'center');
+    $parent->push ($obj);
+    $document->children_accept_date ($self, $obj, @_);
 }
 my $abstract = $document->abstract;
 if (defined $abstract) {
@@ -28,9 +79,49 @@ if (defined $abstract) {
     $parent->push ($obj);
     $document->children_accept_abstract ($self, $obj, @_);
 }
+# my $copyright = $document->copyright;
+# if (defined $copyright && $#$copyright != -1) {
+#    my $obj = new Quilt::Flow::Paragraph (space_before => 2, space_after => 4,
+#                     quadding => 'center');
+#    $parent->push ($obj);
+#    $document->children_accept_copyright ($self, $obj, @_);
+#}
+my $obj = new Quilt::Flow::Paragraph (space_before => 4, space_after => 2,
+                     quadding => 'center');
+$parent->push ($obj);
+$obj->push ("Table of Contents");
+my $toc = new Quilt::Flow (start_indent => 2, space_after => 4);
+$parent->push ($toc);
+$document->children_accept (Quilt::TOC->new, $self, $toc);
 my $body = new Quilt::Flow (start_indent => 2);
 $parent->push ($body);
 $document->children_accept ($self, $body, @_);
+]]></code>
+
+    <rule>
+      <query/TOC/
+      <code><![CDATA[
+    my $self = shift; my $toc_visitor = shift; my $section = shift; my $toc = shift;
+
+my $title = $section->title;
+if (defined $title) {
+    my $section_level = $section->level;
+    my $space_around = (1, 0, 0, 0, 0)[$section_level - 1];
+    my $indent = $section_level * 3 - 1;
+    $space_around = 0
+        if !defined $space_around;
+    my $obj = new Quilt::Flow::Paragraph (space_before => $space_around,
+                      space_after => $space_around, start_indent => $indent);
+    $toc->push ($obj);
+    my @section_nums = $section->numbers;
+    if ($#section_nums != -1) {
+        $obj->push (join (".", @section_nums) . ".");
+        $obj->push (new SGML::SData ('[nbsp  ]'));
+        $obj->push (new SGML::SData ('[nbsp  ]'));
+    }
+    $section->children_accept_title ($self, $obj, @_);
+}
+    $section->children_accept ($toc_visitor, $self, $toc, @_);
 ]]></code>
 
     <rule>
@@ -285,6 +376,10 @@ if (($url eq "") || ($url =~ m/mailto:$name/)) {
 my $self = shift; my $xref_end = shift; my $parent = shift;
 #$xref_end->children_accept ($self, $parent, @_);
 my $reference = $self->{references}->{$xref_end->link};
+if (!$reference) {
+    warn 'No reference for ' . $xref_end->link . "\n";
+    return;
+}
 $parent->push($reference->type);
 eval {
     my @section_nums = $reference->numbers;

@@ -3,8 +3,9 @@ ChangeLog
 Changes
 MANIFEST
 Makefile.PL
+PROJECTS
 Quilt.spec
-Quilt-0.05.spec
+Quilt-0.08.spec
 README
 ToDo
 lib/Quilt.pm
@@ -21,11 +22,12 @@ lib/Quilt/Flow/Inline.pm
 lib/Quilt/Flow/Table.pm
 lib/Quilt/HTML.pm
 lib/Quilt/Objs.pm
+lib/Quilt/TOC.pm
 lib/Quilt/Writer/Ascii.pm
 lib/Quilt/Writer/HTML.pm
 lib/Quilt/XRef.pm
 specs/docbook.spec
-specs/gdo-spec.cat
+specs/catalog
 specs/linuxdoc.spec
 specs/teilite.spec
 specs/toAscii.spec
