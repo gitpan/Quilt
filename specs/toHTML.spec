@@ -39,9 +39,12 @@ my $title = $section->title;
 if (defined $title) {
     my $obj = new Quilt::HTML::Title (level => $section->level);
     $parent->push ($obj);
-    $obj->push (join (".", $section->numbers) . ".");
-    $obj->push (new SGML::SData ('[nbsp  ]'));
-    $obj->push (new SGML::SData ('[nbsp  ]'));
+    my @section_nums = $section->numbers;
+    if ($#section_nums != -1) {
+        $obj->push (join (".", @section_nums) . ".");
+        $obj->push (new SGML::SData ('[nbsp  ]'));
+        $obj->push (new SGML::SData ('[nbsp  ]'));
+    }
     $section->children_accept_title ($self, $obj, @_);
 }
 $section->children_accept ($self, $parent, @_);
@@ -78,7 +81,15 @@ $self->{quoting}--;
 ]]></code>
 
     <rule>
-      <query/Quilt_DO_Block_NoFill/ <make/HTML::NoFill/
+      <query/Quilt_DO_Block_NoFill/
+      <code><![CDATA[
+my $self = shift; my $screen = shift; my $parent = shift;
+$self->{quoting}++;
+my ($obj) = new Quilt::HTML::NoFill ();
+$parent->push ($obj);
+$screen->children_accept ($self, $obj, @_);
+$self->{quoting}--;
+]]></code>
 
     <rule>
       <query/Quilt_DO_List/
@@ -106,23 +117,58 @@ my $url = $xref->url;
 my $name = $xref->as_string;
 
 if (!defined $url) {
-    my $obj = new Quilt::HTML::Anchor (url => [$name]);
+    my $obj = new SGML::Element ([], "A", {href => $xref->contents});
     $parent->push ($obj);
     if ($name =~ /^mailto:(.*)/) {
         $obj->push ($1);
     } else {
         $xref->children_accept ($self, $obj, @_);
     }
-} elsif ($name eq "" || $name eq $url) {
-    my $obj = new Quilt::HTML::Anchor (url => [$url]);
+} elsif ($name =~ /\s*/s || $name eq $url) {
+    my $obj = new SGML::Element ([], "A", {href => [$url]});
     $parent->push ($obj);
     $url =~ s/^mailto://;
     $obj->push ($url);
 } else {
-    my $obj = new Quilt::HTML::Anchor (url => [$url]);
+    my $obj = new SGML::Element ([], "A", {href => [$url]});
     $parent->push ($obj);
     $xref->children_accept ($self, $obj, @_);
 }
+]]></code>
+
+    <rule><query/Quilt_DO_XRef_Anchor/
+      <code><![CDATA[
+my $self = shift; my $anchor = shift; my $parent = shift;
+my $obj = new SGML::Element ([], "A", {name => [$anchor->id]});
+$parent->push ($obj);
+]]></code>
+
+    <rule><query/Quilt_DO_XRef_End/
+      <code><![CDATA[
+my $self = shift; my $end = shift; my $parent = shift;
+my $obj = new SGML::Element ([], "A", {href => ["#" . $end->link]});
+$parent->push ($obj);
+#$end->children_accept ($self, $obj, @_);
+my $reference = $self->{references}->{$xref_end->link};
+$obj->push($reference->type);
+eval {
+    my @section_nums = $reference->numbers;
+    if ($#section_nums != -1) {
+        $obj->push (" " . join (".", @section_nums));
+    }
+    $obj->push (",");
+};
+$obj->push (" ");
+$self->{quoting}++ or $obj->push (new SGML::SData ('[ldquo ]'));
+$reference->children_accept_title ($self, $obj, @_);
+--$self->{quoting} or $obj->push (new SGML::SData ('[rdquo ]'));
+]]></code>
+
+    <rule>
+      <query/Quilt_DO_Inline/
+      <code><![CDATA[
+my $self = shift; my $quote = shift; my $parent = shift;
+$quote->children_accept ($self, $parent, @_);
 ]]></code>
 
     <rule>
@@ -139,7 +185,7 @@ $quote->children_accept ($self, $parent, @_);
       <code><![CDATA[
 my $self = shift; my $literal = shift; my $parent = shift;
 $self->{quoting}++ or $parent->push (new SGML::SData ('[lsquo ]'));
-my $obj = new Quilt::Flow (font_family_name => 'iso-monospace', inline => 1);
+my $obj = new SGML::Element ([], "TT");
 $parent->push ($obj);
 $literal->children_accept ($self, $obj, @_);
 --$self->{quoting} or $parent->push (new SGML::SData ('[rsquo ]'));
@@ -150,14 +196,21 @@ $literal->children_accept ($self, $obj, @_);
       <code><![CDATA[
 my $self = shift; my $replaceable = shift; my $parent = shift;
 $self->{quoting}++ or $parent->push (new SGML::SData ('[lsquo ]'));
-my $obj = new Quilt::Flow (font_posture => 'italic', inline => 1);
+my $obj = new SGML::Element ([], "I");
 $parent->push ($obj);
 $replaceable->children_accept ($self, $obj, @_);
 --$self->{quoting} or $parent->push (new SGML::SData ('[rsquo ]'));
 ]]></code>
 
     <rule>
-      <query/Quilt_DO_Inline_Emphasis/ <make/Flow (font_posture: 'italic', inline: 1)/
+      <query/Quilt_DO_Inline_Emphasis/
+      <code><![CDATA[
+my $self = shift; my $replaceable = shift; my $parent = shift;
+my $obj = new SGML::Element ([], "EM");
+$parent->push ($obj);
+$replaceable->children_accept ($self, $obj, @_);
+]]></code>
+
 
     <rule><query/Quilt_Flow_Table/ <code><![CDATA[
 my $self = shift; my $table = shift; my $parent = shift;

@@ -2,7 +2,7 @@
 # Copyright (C) 1997 Ken MacLeod
 # See the file COPYING for distribution terms.
 #
-# $Id: Struct.pm,v 1.1.1.1 1997/10/22 21:35:09 ken Exp $
+# $Id: Struct.pm,v 1.2 1997/12/07 01:02:51 ken Exp $
 #
 
 use Quilt;
@@ -14,6 +14,13 @@ package Quilt::DO::Struct;
 
 package Quilt::DO::Struct::Section;
 @Quilt::DO::Struct::Section::ISA = qw{Quilt::DO::Struct};
+
+sub type {
+    my $self = shift;
+
+    $self = $self->delegate;
+    return (defined ($self->{'type'}) ? $self->{'type'} : "Section");
+}
 
 sub numbers {
     my $self = shift;
@@ -86,18 +93,9 @@ sub level {
 
 package Quilt::DO::Struct::Section::Iter;
 
+sub type    { goto &Quilt::DO::Struct::Section::type; }
 sub level   { goto &Quilt::DO::Struct::Section::level; }
 sub number  { goto &Quilt::DO::Struct::Section::number; }
 sub numbers { goto &Quilt::DO::Struct::Section::numbers; }
-
-
-package Quilt::DO::Struct::Formal;
-@Quilt::DO::Struct::Formal::ISA = qw{Quilt::DO::Struct};
-
-package Quilt::DO::Struct::Bridge;
-@Quilt::DO::Struct::Bridge::ISA = qw{Quilt::DO::Struct};
-
-package Quilt::DO::Struct::Admonition;
-@Quilt::DO::Struct::Admonition::ISA = qw{Quilt::DO::Struct};
 
 1;

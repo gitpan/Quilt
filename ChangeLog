@@ -1,3 +1,28 @@
+Sat Dec  6 16:39:20 1997  Ken MacLeod  <ken@bitsko.slc.ut.us>
+
+	* specs/wrHTML.spec(Quilt_HTML_NoFill): use cool TABLE look
+
+	* lib/Quilt/XRef.pm: added
+
+	* specs/toHTML.spec(Quilt_DO_Block_NoFill): turn off quoting
+
+	* lib/Quilt/DO/Struct.pm (type): added
+
+	* specs/toAscii.spec(Quilt_DO_Block_NoFill): turn off quoting
+	(Quilt_DO_XRef_End): display references
+
+	* MANIFEST: added Objs.pm, XRef.pm
+
+	* lib/Quilt.pm: moved class definitions to Objs.pm
+
+	* lib/Quilt/Objs.pm: added
+
+Tue Nov  4 21:46:15 1997  Ken MacLeod  <ken@bitsko.slc.ut.us>
+
+	* specs/toHTML.spec: use SGML::Element
+
+	* specs/wrHTML.spec: use $self->print_
+
 Sun Nov  2 21:53:50 1997  Ken MacLeod  <ken@bitsko.slc.ut.us>
 
 	* specs/toAscii.spec: fix spacing in `ABSTRACT', add quotes in mail URLs

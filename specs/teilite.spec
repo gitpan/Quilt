@@ -59,7 +59,7 @@ $list->children_accept_gi ($self, $obj, @_);
     <rule><query/LABEL/     <make/DO::List::Term/
     <rule><query/ITEM/      <make/DO::List::Item/
 
-    <rule><query/PTR/       <make>DO::XRef::End (link: <attr/TARGET/)</make>
+    <rule><query/PTR/       <make>DO::XRef::End (link: <attr-as-string/TARGET/)</make>
 
     <rule><query/TERM/      <make/DO::Inline::Quote/
     <rule><query/SOCALLED/  <make/DO::Inline::Quote/

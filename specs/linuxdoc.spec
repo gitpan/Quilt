@@ -157,8 +157,16 @@ $tag->children_accept_gi ($self, $obj, @_);
     <rule><query/SL/      <make/DO::Inline/
     <rule><query/IT/      <make/DO::Inline/
 
-    <rule><query/HTMLURL/ <make>DO::XRef::URL (url: <attr/URL/, contents: [<attr/NAME/])</make>
-    <rule><query/URL/     <make>DO::XRef::URL (url: <attr/URL/, contents: [<attr/NAME/])</make>
+    <rule><query/HTMLURL URL/
+      <code><![CDATA[
+  my $self = shift; my $element = shift; my $parent = shift;
+  my $obj = new Quilt::DO::XRef::URL (url => $element->attr_as_string ('URL'));
+  $parent->push ($obj);
+  my $name = $element->as_string;
+  if ($name ne '@@URLNAM') {
+    $obj->{'contents'} = $element->contents;
+  }
+]]></code>
     <!-- REF uses `ID' as it's `LINK' attribute, so we don't want to
          automatically make a reference out of it -->
     <rule><query/REF/     <code><![CDATA[

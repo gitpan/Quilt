@@ -27,9 +27,9 @@ $flow->children_accept ($self, $context, @_);
       <query/Quilt_Flow_Paragraph/
       <code><![CDATA[ 
 my $self = shift; my $paragraph = shift; my $context = shift;
-print "<P>";
+$self->print_ ("<P>");
 $paragraph->children_accept ($self, $context, @_);
-print "</P>\n\n";
+$self->print_ ("</P>\n\n");
 ]]></code>
 
     <rule>
@@ -37,30 +37,33 @@ print "</P>\n\n";
       <code><![CDATA[
 my $self = shift; my $title = shift; my $context = shift;
 my $level = $title->level;
-print "<H$level>";
+$self->print_ ("<H$level>");
 $title->children_accept ($self, $context, @_);
-print "</H$level>\n\n";
+$self->print_ ("</H$level>\n\n");
 ]]></code>
 
     <rule>
       <query/Quilt_HTML_Pre/
       <code><![CDATA[
 my $self = shift; my $pre = shift; my $context = shift;
-print "<TABLE cellpadding='5' border='1' bgcolor='#80ffff' width='100%'>\n";
-print "<TR><TD>\n";
-print "<PRE>";
+$self->print_ ("<TABLE cellpadding='5' border='1' bgcolor='#80ffff' width='100%'>\n");
+$self->print_ ("<TR><TD>\n");
+$self->print_ ("<PRE>");
 $pre->children_accept ($self, $context, @_);
-print "</PRE>\n\n";
-print "</TD></TR></TABLE>\n";
+$self->print_ ("</PRE>\n\n");
+$self->print_ ("</TD></TR></TABLE>\n");
 ]]></code>
 
     <rule>
       <query/Quilt_HTML_NoFill/
       <code><![CDATA[
 my $self = shift; my $pre = shift; my $context = shift;
-print "<PRE>";
+$self->print_ ("<TABLE cellpadding='5' border='1' bgcolor='#80ffff' width='100%'>\n");
+$self->print_ ("<TR><TD>\n");
+$self->print_ ("<PRE>");
 $pre->children_accept ($self, $context, @_);
-print "</PRE>\n\n";
+$self->print_ ("</PRE>\n\n");
+$self->print_ ("</TD></TR></TABLE>\n");
 ]]></code>
 
     <rule>
@@ -70,9 +73,9 @@ my $self = shift; my $list = shift; my $context = shift;
 my $type = $list->type;
 $type = 'UL' if !defined $type;
 my $continued = $list->continued ? " CONTINUED" : "";
-print "<$type$continued>";
+$self->print_ ("<$type$continued>");
 $list->children_accept ($self, $context, @_);
-print "</$type>\n\n";
+$self->print_ ("</$type>\n\n");
 ]]></code>
 
     <rule>
@@ -81,18 +84,18 @@ print "</$type>\n\n";
 my $self = shift; my $list_item = shift; my $context = shift;
 my $type = 'LI';
 $type = 'DD' if ($list_item->parent->type eq 'DL');
-print "<$type>";
+$self->print_ ("<$type>");
 $list_item->children_accept ($self, $context, @_);
-print "</$type>\n\n";
+$self->print_ ("</$type>\n\n");
 ]]></code>
 
     <rule>
       <query/Quilt_HTML_List_Term/
       <code><![CDATA[
 my $self = shift; my $list_term = shift; my $context = shift;
-print "<DT>";
+$self->print_ ("<DT>");
 $list_term->children_accept ($self, $context, @_);
-print "</DT>\n\n";
+$self->print_ ("</DT>\n\n");
 ]]></code>
 
     <rule>
@@ -100,41 +103,41 @@ print "</DT>\n\n";
       <code><![CDATA[
 my $self = shift; my $table = shift; my $context = shift;
 my $border = ($table->frame =~ /none/i) ? "" : " BORDER";
-print "<TABLE$border>\n";
+$self->print_ ("<TABLE$border>\n");
 $table->children_accept ($self, $context, @_);
-print "</TABLE>\n\n";
+$self->print_ ("</TABLE>\n\n");
 ]]></code>
 
     <rule>
       <query/Quilt_HTML_Table_Row/
       <code><![CDATA[
 my $self = shift; my $row = shift; my $context = shift;
-print "  <TR>\n";
+$self->print_ ("  <TR>\n");
 $row->children_accept ($self, $context, @_);
-print "  </TR>\n";
+$self->print_ ("  </TR>\n");
 ]]></code>
 
     <rule>
       <query/Quilt_HTML_Table_Data/
       <code><![CDATA[
 my $self = shift; my $data = shift; my $context = shift;
-print "    <TD>";
+$self->print_ ("    <TD>");
 my $data_str = $data->as_string;
 if ($data_str =~ /^\s*$/s) {
-    print "&nbsp;";
+    $self->print_ ("&nbsp;");
 } else {
     $data->children_accept ($self, $context, @_);
 }
-print "</TD>\n";
+$self->print_ ("</TD>\n");
 ]]></code>
 
     <rule>
       <query/Quilt_HTML_Anchor/
       <code><![CDATA[
 my $self = shift; my $anchor = shift; my $context = shift;
-print ("<A url='" . $anchor->url_as_string . ">");
+$self->print_ ("<A url=\"" . $anchor->url_as_string . "\">");
 $anchor->children_accept ($self, $context, @_);
-print "</A>\n\n";
+$self->print_ ("</A>\n\n");
 ]]></code>
 
     <rule>
@@ -145,7 +148,7 @@ print ($data->delegate);
 ]]></code>
 
     <rule>
-      <query/sdata SGML_SData/
+      <query/SGML_SData/
       <code><![CDATA[
 my $self = shift; my $sdata = shift; my $writer = shift;
 
@@ -159,9 +162,10 @@ if (!defined $mapping) {
         $writer->{warn_map}{$data} = 1;
     }
 }
+# XXX this is only because we're using Ascii replacements
 $mapping =~ s/&/&amp;/;
 $mapping =~ s/</&lt;/;
-print ($mapping);
+$self->print_ ($mapping);
 ]]></code>
 
   </rules>

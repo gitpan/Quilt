@@ -1,5 +1,20 @@
 Revision history for Perl extension Quilt.
 
+0.05  Sat Dec  6 19:01:07 CST 1997
+	- Quilt::XRef: added
+	- moved object declarations from Quilt.pm to new
+          Quilt::Objs.pm to allow subs to be overridden
+	- toHTML: use TABLE style for NoFill as well
+	- added `--sgml' option to `tmpfront.sh' to use `SGML::Writer'
+          to write a normalized copy of a doc -- see SGML::Writer for
+          current limitations
+	- Quilt::Writer::HTML, wrHTML: print to stream instead of stdout
+	- Struct.pm: add `type' sub to default to ``Section'' if no
+	  explicit type
+	- linuxdoc.spec: test for `@@URLNAM' and ignore
+	- toAscii, toHTML: add references
+	- toHTML: added internal links
+
 0.04  Mon Nov  3 11:45:07 CST 1997
 	- toAscii.spec: fix space between `ABSTRACT' title and text,
           add quotes in mail URLs, add XRef::End

@@ -1,8 +1,8 @@
 Summary: Perl 5 module for transforming and formatting SGML/XML documents.
 Name: Quilt
-Version: 0.04
+Version: 0.05
 Release: 1
-Source: ftp://ftp.uu.net/vendor/bitsko/gdo/Quilt-0.04.tar.gz
+Source: ftp://ftp.uu.net/vendor/bitsko/gdo/Quilt-0.05.tar.gz
 Copyright: distributable
 Group: Applications/Publishing/SGML
 URL: http://www.bitsko.slc.ut.us/

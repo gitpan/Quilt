@@ -53,9 +53,12 @@ if (defined $title) {
     my $obj = new Quilt::Flow::Paragraph (space_before => $space_before,
                       space_after => 1, start_indent => 0);
     $parent->push ($obj);
-    $obj->push (join (".", $section->numbers) . ".");
-    $obj->push (new SGML::SData ('[nbsp  ]'));
-    $obj->push (new SGML::SData ('[nbsp  ]'));
+    my @section_nums = $section->numbers;
+    if ($#section_nums != -1) {
+        $obj->push (join (".", @section_nums) . ".");
+        $obj->push (new SGML::SData ('[nbsp  ]'));
+        $obj->push (new SGML::SData ('[nbsp  ]'));
+    }
     $section->children_accept_title ($self, $obj, @_);
 }
 $section->children_accept ($self, $parent, @_);
@@ -143,7 +146,9 @@ $screen->children_accept ($self, $obj, @_);
 my $self = shift; my $screen = shift; my $parent = shift;
 my $obj = new Quilt::Flow::Paragraph (space_before => 1, space_after => 1, lines => 'asis');
 $parent->push ($obj);
+$self->{quoting}++;
 $screen->children_accept ($self, $obj, @_);
+--$self->{quoting};
 ]]></code>
 
     <rule>
@@ -265,21 +270,32 @@ if (($url eq "") || ($url =~ m/mailto:$name/)) {
     $parent->push ($obj);
     $xref->children_accept ($self, $obj, @_);
     --$self->{quoting} or $parent->push (new SGML::SData ('[rsquo ]'));
-} elsif (($name ne "") && ($name ne $url)) {
+} elsif (($name !~ /\s*/s) && ($name ne $url)) {
     my $obj = new Quilt::Flow (inline => 1);
     $parent->push ($obj);
     $xref->children_accept ($self, $obj, @_);
     $parent->push (" <$url>");
 } else {
-    $parent->push ($url);
+    $parent->push ("<$url>");
 }
 ]]></code>
 
     <rule><query/Quilt_DO_XRef_End/
       <code><![CDATA[
-my $self = shift; my $quote = shift; my $parent = shift;
+my $self = shift; my $xref_end = shift; my $parent = shift;
+#$xref_end->children_accept ($self, $parent, @_);
+my $reference = $self->{references}->{$xref_end->link};
+$parent->push($reference->type);
+eval {
+    my @section_nums = $reference->numbers;
+    if ($#section_nums != -1) {
+        $parent->push (" " . join (".", @section_nums));
+    }
+    $parent->push (",");
+};
+$parent->push (" ");
 $self->{quoting}++ or $parent->push (new SGML::SData ('[ldquo ]'));
-$quote->children_accept ($self, $parent, @_);
+$reference->children_accept_title ($self, $parent, @_);
 --$self->{quoting} or $parent->push (new SGML::SData ('[rdquo ]'));
 ]]></code>
 

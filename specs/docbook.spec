@@ -112,8 +112,8 @@
     <rule><query/TERM/           <make/DO::List::Term/
 
       <!-- XXX this should use a CDATAATTR element -->
-    <rule><query/ULINK/          <make>DO::XRef::URL (url: <attr/URL/)</make>
-    <rule><query/LINK/           <make>DO::XRef (link: <attr/LINKEND/)</make>
+    <rule><query/ULINK/          <make>DO::XRef::URL (url: <attr-as-string/URL/)</make>
+    <rule><query/LINK/           <make>DO::XRef (link: <attr-as-string/LINKEND/)</make>
     <rule><query/XREF/           <make>DO::XRef::End (link: <attr/LINKEND/)</make>
 
     <rule><query/EMPHASIS/       <make/DO::Inline::Emphasis/
